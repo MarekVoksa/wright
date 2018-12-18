@@ -1,0 +1,24 @@
+{
+  "name": "wright",
+  "version": "1.0.0",
+  "description": "Marek Voksa's graduation project",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/MarekVoksa/wright.git"
+  },
+  "author": "Marek Voksa",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/MarekVoksa/wright/issues"
+  },
+  "homepage": "https://github.com/MarekVoksa/wright#readme",
+  "dependencies": {
+    "body-parser": "^1.18.3",
+    "express": "^4.16.4",
+    "mongoose": "^5.4.0"
+  }
+}
