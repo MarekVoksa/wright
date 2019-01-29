@@ -1,7 +1,7 @@
 const express = require( 'express' );
 const bodyParser = require( 'body-parser' );
 
-const config = require( './config/config.js' );
+const config = require( './app/config/config.js' );
 const mongoose = require( 'mongoose' );
 
 const app = express();
@@ -14,17 +14,19 @@ app.use( bodyParser.json() );
 
 mongoose.Promise = global.Promise;
 
-mongoose.connect( config.url, { useNewUrlParser: true } ).then( () => {
+mongoose.connect( config.url, { useNewUrlParser: true } )
+  .then( () => {
 
     console.log( "Connected to the database..." );
 
-}).catch( ( err ) => {
+  })
+  .catch( ( err ) => {
 
     console.log( 'Could not connect to the database. Exiting.', err );
 
     process.exit();
 
-});
+  });
 
 
 app.get( '/', ( req, res ) => {
@@ -36,6 +38,7 @@ app.get( '/', ( req, res ) => {
 
 require( './app/routes/article.routes.js' )( app );
 require( './app/routes/auth.routes.js' )( app );
+require( './app/routes/register.routes.js' )( app );
 
 
 app.listen( 3000, () => {
