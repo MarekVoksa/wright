@@ -8,9 +8,9 @@ const Schema = mongoose.Schema;
 const UserSchema = mongoose.Schema( {
 
   name: String,
+  imageURL: String,
   login: String,
-  password: String,
-  articles: [ { type: Schema.Types.ObjectId, ref: 'Article' } ]
+  password: String
 
 }, {
 
@@ -20,7 +20,7 @@ const UserSchema = mongoose.Schema( {
 
 UserSchema.pre( 'save', function ( next ) {
 
-  if ( ! this.isModified( 'password' ) ) return next();
+  if ( ! this.isModified( 'password' ) ) { return next(); }
 
   let salt = bcrypt.genSaltSync( 10 );
   let hash = bcrypt.hashSync( this.password, salt );
@@ -31,33 +31,26 @@ UserSchema.pre( 'save', function ( next ) {
 
 });
 
-UserSchema.methods.validatePassword = ( password ) => {
+UserSchema.methods.validatePassword = ( password, user ) => {
 
-  return bcrypt.compareSync( password, this.password );
+  return bcrypt.compareSync( password, user.password );
 
 };
 
-UserSchema.methods.generateJWT = function() {
+UserSchema.methods.generateJWT = ( user ) => {
 
   var today = new Date();
-  var exp = new Date(today);
-  exp.setDate(today.getDate() + 60);
+  var exp = new Date( today );
 
-  return jwt.encode({
-    id: this._id,
-    name: this.name,
-    exp: exp.getTime(),
-  }, secret);
+  exp.setDate( today.getDate() + 60 );
 
-};
+  return jwt.encode( {
 
-UserSchema.methods.toAuthJSON = function(){
+    id: user._id,
+    name: user.name,
+    exp: exp.getTime()
 
-  return {
-    name: this.name,
-    login: this.login,
-    token: this.generateJWT()
-  };
+  }, secret );
 
 };
 

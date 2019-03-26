@@ -9,29 +9,62 @@ const bcrypt = require( 'bcryptjs' );
 
 exports.auth = ( req, res ) => {
 
-  User.findOne( { login: req.body.login } )
-    .then( ( user ) => {
+  let cookie = req.cookies.wrightToken;
 
-      if ( user.validatePassword( req, body.password ) ) {
+  if ( ! cookie ) {
 
-        let token = user.generateJWT();
+    User.findOne( { 'login': req.body.login }, ( error, user ) => {
 
-        return res.status( 200 )
-          .send( { token } );
+      if ( ! error ) {
+
+        if ( user.validatePassword( req.body.password, user ) ) {
+
+          let token = user.generateJWT( user );
+
+          return res.status( 200 )
+            .cookie( 'wrightToken', token )
+            .send( { token: token } );
+
+        } else {
+
+          return res.status( 403 )
+            .send( { message: "Username or password incorrect." } );
+
+        }
 
       } else {
 
-        return res.status( 403 )
-          .send( { message: "Username or password incorrect." } );
+        return res.status( 500 )
+          .send( { message: "Server error while searching for user." } );
 
       }
 
-    })
-    .catch( () => {
-
-      return res.status( 403 )
-        .send( { message: "Username or password incorrect." } );
-
     });
+
+  } else {
+
+    return res.status( 403 )
+      .send( { message: "Already authenticated." } );
+
+  }
+
+};
+
+exports.unauth = ( req, res ) => {
+
+  let cookie = req.cookies.wrightToken;
+
+  if ( cookie ) {
+
+    return res.status( 200 )
+      .clearCookie( 'wrightToken' )
+      .send( { message: "Unauthenticated successfully." } );
+
+  } else {
+
+    return res.status( 403 )
+      .send( { message: "Not authenticated." } );
+
+  }
 
 }
