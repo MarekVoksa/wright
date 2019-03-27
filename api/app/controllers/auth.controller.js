@@ -15,7 +15,7 @@ exports.auth = ( req, res ) => {
 
     User.findOne( { 'login': req.body.login }, ( error, user ) => {
 
-      if ( ! error ) {
+      if ( ! error && user !== null) {
 
         if ( user.validatePassword( req.body.password, user ) ) {
 
